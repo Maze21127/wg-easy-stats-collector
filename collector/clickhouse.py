@@ -56,6 +56,7 @@ class ClickhouseClient:
         ]
         new_rows = self._client.execute(INSERT_STATS_QUERY, data_to_add)
         logger.info(f"Inserted {new_rows} rows into wg_stats table")
+        return new_rows
 
     def _create_stats_table(self) -> None:
         self._client.execute(CREATE_STATS_TABLE_QUERY)
