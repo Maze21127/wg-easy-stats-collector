@@ -3,6 +3,7 @@ import os
 
 from clickhouse_driver import Client
 from dotenv import load_dotenv
+from loguru import logger
 from pydantic import HttpUrl, SecretStr
 
 from collector.clickhouse import ClickhouseClient, ClickHouseDsn
@@ -31,7 +32,8 @@ async def main() -> None:
     )
     client = ClickhouseClient(ch_client)
     client.create_tables()
-    client.insert_stats(data)
+    inserted = client.insert_stats(data)
+    logger.info(f"Inserted {inserted} rows")
 
 
 if __name__ == "__main__":

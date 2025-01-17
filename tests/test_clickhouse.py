@@ -28,7 +28,8 @@ def test_insert_many_clients_info(
 ):
     clients_count = 10
     clients = [client_info_factory.build() for _ in range(clients_count)]
-    client.insert_stats(clients)
+    rows = client.insert_stats(clients)
+    assert rows == clients_count
 
     res = client._client.execute("SELECT count(*) from wg_stats")
     assert res[0][0] == clients_count
@@ -39,7 +40,8 @@ def test_insert_one_client_info(
     client_info_factory: ClientInfoFactory,
     client: ClickhouseClient,
 ):
-    client.insert_stats([client_info_factory.build()])
+    rows = client.insert_stats([client_info_factory.build()])
+    assert rows == 1
 
     res = client._client.execute("SELECT count(*) from wg_stats")
     assert res[0][0] == 1

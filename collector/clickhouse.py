@@ -1,4 +1,5 @@
 from clickhouse_driver import Client
+from loguru import logger
 from pydantic import ClickHouseDsn as _ClickHouseDsn
 from pydantic import UrlConstraints
 
@@ -40,8 +41,9 @@ class ClickhouseClient:
 
     def create_tables(self) -> None:
         self._create_stats_table()
+        logger.info("Created all tables")
 
-    def insert_stats(self, stats: list[ClientInfo]) -> None:
+    def insert_stats(self, stats: list[ClientInfo]) -> int:
         data_to_add = [
             {
                 "id": str(stat.id),
@@ -52,7 +54,9 @@ class ClickhouseClient:
             }
             for stat in stats
         ]
-        self._client.execute(INSERT_STATS_QUERY, data_to_add)
+        new_rows = self._client.execute(INSERT_STATS_QUERY, data_to_add)
+        logger.info(f"Inserted {new_rows} rows into wg_stats table")
 
     def _create_stats_table(self) -> None:
         self._client.execute(CREATE_STATS_TABLE_QUERY)
+        logger.info("Created stats table")
